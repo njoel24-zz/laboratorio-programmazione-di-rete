@@ -1,0 +1,6 @@
+Alimentari
+30V5T1 | 1.04 | Cioccolata Al Latte CioccoLatte
+AT7k887 | 0.67 | Pasta Integrale LaBuonaPastaBuitoni
+8976HJ8 | 1.39 | Caff\x{00E8} Arabica 100% BuonCaff\x{00E8}
+ak47 | 4.95 | Nastrine_Coop
+end

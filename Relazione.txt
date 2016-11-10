@@ -1,0 +1,86 @@
+       Progetto  OpenCoop 
+       Corso di Laboratorio V 2003-2004
+       Relazione e progetto di:
+       Cristiano Anselmi, n.226847 corso A
+
+
+                          0.Introduzione	 
+Il progetto è un applicazione di rete che utilizza il linguaggio java 
+per la gestione del centro commerciale OPENCOOP.
+Il progetto utilizza la tipologia di comunicazione UDP e si divide in 3
+classi:
+
+Server.java : che a sua volta si estende alle classi GestioneCasse.java,
+	     GestioneSocio.java, NuovoSocio.java e PagaSocio.java e Incrementa.java
+
+Client.java : che si estende in Ricevi.java e FineClient.java
+              
+              
+
+Salvatempo.java
+
+
+                         1.Server.java
+
+Il Server all'avvio carica in strutture dati di tipo array di stringhe 3
+file: Alimentari.txt, Giochi.txt e listaSoci.txt utilizzando il metodo statico carica().
+
+Dopo inizializza le classi GestioneSocio.java e GestioneCasse.java e 
+avvia i relativi thread.
+
+Poi presenta un menu' da dove e possibile effettuare 3 operazioni:
+    A. Aggiornare le liste chiamando il metodo carica().
+    B.  Inviare liste alle casse: qui dichiara un canale di tipo MulticastSocket
+	 e un indirizzo di classe D. In seguito spedisce i dati a Ricevi.java, thread della classe Client.java,
+	 e chiude il canale.
+    C.	 esce dal ciclo, chiude i Thread e le casse e il programma termina. Per chiudere i Thread utilizzo
+         una serie di variabili booleane create dal Server e utilizzate dalle altre classi per avviare
+	 i cicli. 
+
+
+GestioneCasse.java: Questo thread, avviato dal Server, avvia un canale Multicast e si 
+		    mette in ascolto. Le casse, all'avvio,
+                    eseguono una joinGroup() all'indirizzo Multicast creato da GestioneCasse e ricevono i dati.
+GestioneSocio.java: Questo Thread si occupa di ricevere richiesta di codici Salvatempo dai soci che vogliono
+		    accedere al centro commerciale. Ricevuta una richiesta, confronta il nome con la lista
+		    soci e ,in caso positivo, restitisce un codice e una coppia di porte, utlizzando
+		    la classe Incrementa, per la comunicazione NuovoSocio e Salvatempo e avvia NuovoSocio.java
+NuovoSocio.java:  NuovoSocio.java è un Thread avviato da GestioneSocio.java che si occupa di gestire le richieste
+		  di acquisto, rimozione, lista e totale del Salvatempo. All'avvio dichiara un canale
+		  di tipo DatagramSocket , riceve il codice del Salvatempo e la coppia di porte e in piu'
+		  avvia il Thread PagaSocio. All'inizio crea un istanza della classe AggiornaTot, la quale 
+		  aggiorna il valore di Tot.
+PagaSocio.java: estende NuovoSocio e si occupa della comunicazione con il Client che richiede del Salvatempo
+		per il pagamento. Riceve il valore di tot attraverso la classe AggiornaTot.  Dopo termina. 
+
+
+
+                       2.Client.java
+La classe Client presenta un menu' per scegliere il tipo di cassa e carica le relative
+strutture dati eseguendo una joinGroup verso GestioneCasse.java	ed inviando ad essa
+il tipo di cassa per ricevere i relativi prodotti. Dopo avvia i thread Ricevi.java e FineClient.java.
+Presenta un menu':
+	     1- Pagamento cliente col Salvatempo: esegue una joinGroup verso il gruppo Multicast
+	        creato da PagaSocio.java e riceve il totale.
+	     2. Pagamento cliente: presenta un prompt dove inserire i vari prodotti acquistati e
+	        calcola il totale. L'algoritmo tiene conto se il prezzo e un intero o un decimale.
+Ricevi.java: questo thread esegue una joinGroup verso il gruppo Multicast creato dal Server e 
+	     attende di ricevere i dati ogni volta che il Server decide di spedirli.
+
+FineClient: questo Thread attende di ricevere il segnale di chiusura dal Server, ed in questo 
+	    caso, cambia il valore della variabile booleana ciclo della classe Client e termina.
+
+	    
+			3. Salvatempo.java
+		     
+La classe Salvatempo.java esegue inizialmente una joinGroup verso GestioneSocio per ricevere il codice
+del Salvatempo e la coppia di porte, in caso negativo termina. Dopo rilascia il gruppo e crea un canale di tipo
+DatagramSocket per la comunicazione con NuovoSocio.
+Poi presenta un menu' dal quale è possibile acquistare, rimuovere, esguire il totale stampare la lista dei
+prodotti acquistati. Si noti che sono tutte richieste al Server. E' possibile terminare il programma digitando x.
+E' possibile acquistare prodotti di entrambi i reparti.
+  
+	      
+	           
+
+	
